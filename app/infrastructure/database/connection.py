@@ -13,9 +13,16 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
+def _normalize_database_url(url: str) -> str:
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    return url
+
+
 settings = Settings()
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+database_url = _normalize_database_url(settings.DATABASE_URL)
+engine = create_async_engine(database_url, echo=False)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
