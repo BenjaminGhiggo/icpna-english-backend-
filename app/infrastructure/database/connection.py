@@ -1,3 +1,4 @@
+import ssl
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from pydantic_settings import BaseSettings
@@ -24,7 +25,6 @@ settings = Settings()
 database_url = _normalize_database_url(settings.DATABASE_URL)
 engine_kwargs = {"echo": False}
 if "render.com" in database_url:
-    import ssl
     ssl_ctx = ssl.create_default_context()
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = ssl.CERT_NONE
