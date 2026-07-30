@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="ICPNA English Learning Platform",
-    description="Backend DDD-Lite con FastAPI + MySQL",
+    description="Backend DDD-Lite con FastAPI + PostgreSQL",
     version="0.1.0",
     lifespan=lifespan,
 )

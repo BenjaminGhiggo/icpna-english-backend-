@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: icpna-english-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: icpna-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+
+databases:
+  - name: icpna-db
+    plan: free
+    databaseName: icpna_english

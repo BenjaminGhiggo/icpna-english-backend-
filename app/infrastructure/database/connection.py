@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "mysql+aiomysql://icpna:icpna123@localhost:3306/icpna_english"
+    DATABASE_URL: str = "postgresql+asyncpg://icpna:icpna123@localhost:5432/icpna_english"
     SECRET_KEY: str = "change-this-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
