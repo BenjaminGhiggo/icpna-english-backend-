@@ -3,12 +3,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.api import auth, courses, exercises, progress
-from app.infrastructure.database.connection import init_db
+from app.infrastructure.database.connection import init_db, async_session
+from app.infrastructure.repositories.user_repository import SQLAlchemyUserRepository
+from app.application.security import get_password_hash
+from app.domain.user.entities import User
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    async with async_session() as session:
+        repo = SQLAlchemyUserRepository(session)
+        existing = await repo.get_by_email("admin@icpna.edu.pe")
+        if not existing:
+            admin = User.create_admin(
+                email="admin@icpna.edu.pe",
+                password="admin123",
+                full_name="Admin ICPNA",
+                hashed_password=get_password_hash("admin123"),
+            )
+            await repo.create(admin)
     yield
 
 
