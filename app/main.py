@@ -1,0 +1,43 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
+from app.api import auth, courses, exercises, progress
+from app.infrastructure.database.connection import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+
+app = FastAPI(
+    title="ICPNA English Learning Platform",
+    description="Backend DDD-Lite con FastAPI + MySQL",
+    version="0.1.0",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
+app.include_router(courses.router, prefix="/api/courses", tags=["courses"])
+app.include_router(exercises.router, prefix="/api/exercises", tags=["exercises"])
+app.include_router(progress.router, prefix="/api/progress", tags=["progress"])
+
+
+@app.get("/")
+async def root():
+    return {"message": "ICPNA English Learning Platform API", "version": "0.1.0"}
+
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
