@@ -15,7 +15,9 @@ class Settings(BaseSettings):
 
 def _normalize_database_url(url: str) -> str:
     if url.startswith("postgresql://"):
-        return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    if "render.com" in url and "sslmode=" not in url:
+        url += "?sslmode=require"
     return url
 
 
