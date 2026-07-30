@@ -1,4 +1,3 @@
-import ssl
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from pydantic_settings import BaseSettings
@@ -23,13 +22,7 @@ def _normalize_database_url(url: str) -> str:
 settings = Settings()
 
 database_url = _normalize_database_url(settings.DATABASE_URL)
-engine_kwargs = {"echo": False}
-if "render.com" in database_url:
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.check_hostname = False
-    ssl_ctx.verify_mode = ssl.CERT_NONE
-    engine_kwargs["connect_args"] = {"ssl": ssl_ctx}
-engine = create_async_engine(database_url, **engine_kwargs)
+engine = create_async_engine(database_url, echo=False)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
