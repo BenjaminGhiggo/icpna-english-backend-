@@ -16,15 +16,20 @@ class Settings(BaseSettings):
 def _normalize_database_url(url: str) -> str:
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
-    if "render.com" in url and "sslmode=" not in url:
-        url += "?sslmode=require"
     return url
+
+
+def _get_engine_kwargs(url: str) -> dict:
+    kwargs = {"echo": False}
+    if "render.com" in url:
+        kwargs["connect_args"] = {"ssl": "require"}
+    return kwargs
 
 
 settings = Settings()
 
 database_url = _normalize_database_url(settings.DATABASE_URL)
-engine = create_async_engine(database_url, echo=False)
+engine = create_async_engine(database_url, **_get_engine_kwargs(database_url))
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
